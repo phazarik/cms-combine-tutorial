@@ -18,15 +18,9 @@ This repository provides a workflow to build and run Combine **locally**. All de
 
 This repository is structured into progressively complex levels, mimicking the actual workflow of developing a CMS analysis. The tutorials progress from basic counting experiments to multi-region shape-based analyses with nuisance parameters. Each level is contained within its own directory. Each directory contains a dedicated README file detailing the concepts, along with the necessary datacards, ROOT files, and executable run scripts.
 
-- **[01_single_bin_stat](./01_single_bin_stat):** This example introduces the fundamental structure of a Combine datacard. It demonstrates the creation of a text card for a simple counting experiment in a single bin, considering only statistical uncertainties.
+- **[level1_GettingStarted](./level1_GettingStarted):** Introduces the basic structure of a CMS Combine datacard. Starting from a simple counting experiment, it gradually adds multiple backgrounds, multiple signal regions, and automatic MC statistical uncertainties, while demonstrating the most commonly used Combine commands.
 
-- **[02_multi_bin_stat](./02_multi_bin_stat):** This level expands the simple counting experiment to multiple bins or categories. It introduces the syntax required to handle multiple observation channels simultaneously within a single datacard.
-
-- **[03_single_sr_shape_stat](./03_single_sr_shape_stat):** This module transitions from simple text-based counting to shape-based analysis. It covers the methodology for linking a datacard to a ROOT file containing nominal histogram shapes for signal and background processes.
-
-- **[04_single_sr_shape_syst](./04_single_sr_shape_syst):** This section introduces nuisance parameters to the shape analysis. It details the incorporation of Up and Down systematic variation histograms into ROOT files and the process of declaring them as shape uncertainties in the datacard.
-
-- **[05_multi_sr_shape_syst](./05_multi_sr_shape_syst):** The final level covers a realistic CMS analysis scenario, focusing on a comprehensive search that combines multiple distinct signal regions. It outlines the management of independent datacards for different regions and the usage of the combineCards.py tool to generate a combined workspace for a global fit.
+![More to be added](https://img.shields.io/badge/More%20to%20be%20added-yellow?style=for-the-badge)
 
 To get the most out of these tutorials, I recommend progressing through the directories in numerical order. 
 
@@ -109,7 +103,8 @@ export PATH=$HOME/HiggsAnalysis-CombinedLimit/build/bin:$PATH
 export LD_LIBRARY_PATH=$HOME/HiggsAnalysis-CombinedLimit/build/lib:$LD_LIBRARY_PATH
 export PYTHONPATH=$HOME/HiggsAnalysis-CombinedLimit/build/python:$PYTHONPATH
 ```
-All done! Verify the installation by running the following.
+Done!<br>
+Verify the installation by running the following.
 ```bash
 combine --help
 ```
