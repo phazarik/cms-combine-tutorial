@@ -1,0 +1,71 @@
+#------------------------------------------------------------------------------
+# Example 101: The simplest possible CMS Combine datacard
+#
+# This is a counting experiment:
+#   - 1 analysis bin (signal region: SR1)
+#   - 1 signal process
+#   - 1 background process
+#   - No nuisance parameters
+#------------------------------------------------------------------------------
+
+#------------------------------------------------------------------------------
+# Number of analysis bins (channels)
+#------------------------------------------------------------------------------
+imax 1
+
+#------------------------------------------------------------------------------
+# Number of background processes.
+# There is one signal process and one background process.
+# Therefore, jmax = 1.
+#------------------------------------------------------------------------------
+jmax 1
+
+#------------------------------------------------------------------------------
+# Number of nuisance parameters.
+# There are none in this example.
+#------------------------------------------------------------------------------
+kmax 0
+
+#------------------------------------------------------------------------------
+# Observation
+# "bin" gives the name of the analysis bin (here called "SR1").
+# "observation" is the number of events observed in data.
+#------------------------------------------------------------------------------
+bin          SR1
+observation  26
+
+#------------------------------------------------------------------------------
+# Expected event yields
+# Each column corresponds to one process in one analysis bin.
+# Since there is only one bin, "SR1" appears twice:
+#   - once for the signal
+#   - once for the background
+# Entries are whitespace-separated (spaces or tabs).
+#------------------------------------------------------------------------------
+bin          SR1          SR1
+
+#------------------------------------------------------------------------------
+# Process names
+#------------------------------------------------------------------------------
+process      vll          ttbar
+
+#------------------------------------------------------------------------------
+# Process IDs
+# Signal processes must have IDs <= 0. Background processes must have IDs > 0.
+# The ordering must exactly match the process names above.
+#------------------------------------------------------------------------------
+process      0            1
+
+#------------------------------------------------------------------------------
+# Expected event yields
+# These are the predicted event yields before the fit.
+# The ordering must exactly match the process names above.
+#------------------------------------------------------------------------------
+rate         5.2          23.8
+
+#------------------------------------------------------------------------------
+# End of datacard
+# No nuisance parameters are defined because this is a purely nominal example.
+# Later examples will introduce lnN uncertainties, autoMCStats, shape
+# uncertainties, and other features.
+#------------------------------------------------------------------------------

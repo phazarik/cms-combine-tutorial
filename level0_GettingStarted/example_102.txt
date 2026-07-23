@@ -1,0 +1,65 @@
+#------------------------------------------------------------------------------
+# Example 102: Counting experiment with multiple background processes
+#
+# This is a counting experiment:
+#   - 1 analysis bin (signal region: SR1)
+#   - 1 signal process
+#   - 3 background processes (ttbar, DY, VV)
+#   - No nuisance parameters
+#------------------------------------------------------------------------------
+
+#------------------------------------------------------------------------------
+# Number of analysis bins (channels)
+#------------------------------------------------------------------------------
+imax 1
+
+#------------------------------------------------------------------------------
+# Number of background processes.
+# There is one signal process and three background processes.
+# Therefore, jmax = 3.
+#------------------------------------------------------------------------------
+jmax 3
+
+#------------------------------------------------------------------------------
+# Number of nuisance parameters.
+# There are none in this example.
+#------------------------------------------------------------------------------
+kmax 0
+
+#------------------------------------------------------------------------------
+# Observation
+#------------------------------------------------------------------------------
+bin          SR1
+observation  33
+
+#------------------------------------------------------------------------------
+# Expected event yields
+# One column is needed for each process in each analysis bin.
+# Since there is only one bin, "SR1" appears once for every process.
+#------------------------------------------------------------------------------
+bin          SR1      SR1      SR1      SR1
+
+#------------------------------------------------------------------------------
+# Process names
+#------------------------------------------------------------------------------
+process      vll      ttbar    dy       vv
+
+#------------------------------------------------------------------------------
+# Process IDs
+# Signal processes must have IDs <= 0.
+# Background processes must have IDs > 0.
+#------------------------------------------------------------------------------
+process      0        1        2        3
+
+#------------------------------------------------------------------------------
+# Expected event yields
+# These are the nominal predictions before the fit.
+#------------------------------------------------------------------------------
+rate         5.2      18.3     6.8      2.1
+
+#------------------------------------------------------------------------------
+# End of datacard
+# No nuisance parameters are defined in this example.
+# The next examples will introduce systematic uncertainties affecting one or
+# more processes.
+#------------------------------------------------------------------------------

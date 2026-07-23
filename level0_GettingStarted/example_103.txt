@@ -1,0 +1,82 @@
+#------------------------------------------------------------------------------
+# Example 103: Multiple analysis bins with autoMCStats
+#
+# This is a counting experiment:
+#   - 2 analysis bins (signal regions: SR1 and SR2)
+#   - 1 signal process
+#   - 3 background processes (ttbar, DY, VV)
+#   - Automatic treatment of MC statistical uncertainties using autoMCStats
+#
+# Each analysis bin contains the same set of processes. The expected event
+# yields are specified independently for every process in every analysis bin.
+#------------------------------------------------------------------------------
+
+#------------------------------------------------------------------------------
+# Number of analysis bins (channels)
+#------------------------------------------------------------------------------
+imax 2
+
+#------------------------------------------------------------------------------
+# Number of background processes.
+# There is one signal process and three background processes.
+# Therefore, jmax = 3.
+#------------------------------------------------------------------------------
+jmax 3
+
+#------------------------------------------------------------------------------
+# Number of nuisance parameters.
+# The value "*" tells Combine to determine the number automatically.
+# This is required when using autoMCStats.
+#------------------------------------------------------------------------------
+kmax *
+
+#------------------------------------------------------------------------------
+# Observation
+# One observed event count is given for each analysis bin.
+#------------------------------------------------------------------------------
+bin          SR1      SR2
+observation  33       21
+
+#------------------------------------------------------------------------------
+# Expected event yields
+# One column is needed for each process in each analysis bin.
+# The ordering is:
+#   SR1: signal, ttbar, DY, VV
+#   SR2: signal, ttbar, DY, VV
+#------------------------------------------------------------------------------
+bin          SR1      SR1      SR1      SR1      SR2      SR2      SR2      SR2
+
+#------------------------------------------------------------------------------
+# Process names
+#------------------------------------------------------------------------------
+process      vll      ttbar    dy       vv       vll      ttbar    dy       vv
+
+#------------------------------------------------------------------------------
+# Process IDs
+# Signal processes must have IDs <= 0.
+# Background processes must have IDs > 0.
+#------------------------------------------------------------------------------
+process      0        1        2        3        0        1        2        3
+
+#------------------------------------------------------------------------------
+# Expected event yields
+# These are the nominal predictions before the fit.
+#------------------------------------------------------------------------------
+rate         5.2      18.3     6.8      2.1      3.4      12.1     4.2      1.3
+
+#------------------------------------------------------------------------------
+# Automatic MC statistical uncertainties
+#
+# Syntax:
+#   autoMCStats threshold include-signal hist-mode
+#
+# Here:
+#   threshold      = 10
+#   include-signal = 1 (include signal statistical uncertainties)
+#   hist-mode      = 1 (use the Barlow-Beeston-lite treatment)
+#------------------------------------------------------------------------------
+* autoMCStats 10 1 1
+
+#------------------------------------------------------------------------------
+# End of datacard
+#------------------------------------------------------------------------------
