@@ -1,2 +1,109 @@
-# cms-combine-tutorial
-Tutorials on statistical analysis using CMS-combine, covering from basic single-bin stat-only cards to multi-region shape analyses with systematics, completely outside the CMSSW framework.
+# CMS-combine tutorial
+
+<div align="center">
+
+![WIP](https://img.shields.io/badge/Warning-Work_in_Progress-FF3000?style=for-the-badge&logo=git&logoColor=white&labelColor=333333)
+
+</div>
+
+![ROOT](https://img.shields.io/badge/ROOT-6.36-yellow) ![Python](https://img.shields.io/badge/Python-3.10.18-3776AB?logo=python&logoColor=white) ![Boost](https://img.shields.io/badge/Boost-1.91.0-FF9900?logo=c%2B%2B&logoColor=white) ![Eigen](https://img.shields.io/badge/Eigen-5.0.1-E34326) ![VDT](https://img.shields.io/badge/VDT-0.4.6-7A7A7A)
+
+The CMS-Combine tool is a robust software package based on [RooStats](https://twiki.cern.ch/twiki/bin/view/RooStats/WebHome) and [RooFit](https://root.cern.ch/roofit), utilized extensively for statistical analysis. Originally developed within the Higgs Physics Analysis Group (PAG), its usage has since become widespread across the CMS collaboration. Typically, Combine is executed within the CMSSW framework. 
+
+This repository provides a workflow to build and run Combine **locally**. All dependencies in this guide are compiled using `cmake`/`make` and installed directly into your home directory (`$HOME`). This avoids the need for `sudo` access, making the setup fully compatible with high-performance clusters where you may lack root or administrator privileges.
+
+🔗 Official Documentation: [HiggsAnalysis-CombinedLimit](https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/latest/)
+
+## 📚 Tutorial structure
+
+This repository is structured into progressively complex levels, mimicking the actual workflow of developing a CMS analysis. The tutorials progress from basic counting experiments to multi-region shape-based analyses with nuisance parameters. Each level is contained within its own directory. Each directory contains a dedicated README file detailing the concepts, along with the necessary datacards, ROOT files, and executable run scripts.
+
+- **[01_single_bin_stat](./01_single_bin_stat):**  This example introduces the fundamental structure of a Combine datacard. It demonstrates the creation of a text card for a simple counting experiment in a single bin, considering only statistical uncertainties.
+
+- **[02_multi_bin_stat](./02_multi_bin_stat):** This level expands the simple counting experiment to multiple bins or categories. It introduces the syntax required to handle multiple observation channels simultaneously within a single datacard.
+
+- **[03_single_sr_shape_stat](./03_single_sr_shape_stat):** This module transitions from simple text-based counting to shape-based analysis. It covers the methodology for linking a datacard to a ROOT file containing nominal histogram shapes for signal and background processes.
+
+- **[04_single_sr_shape_syst](./04_single_sr_shape_syst):** This section introduces nuisance parameters to the shape analysis. It details the incorporation of Up and Down systematic variation histograms into ROOT files and the process of declaring them as shape uncertainties in the datacard.
+
+- **[05_multi_sr_shape_syst](./05_multi_sr_shape_syst):** The final level covers a realistic CMS analysis scenario, focusing on a comprehensive search that combines multiple distinct signal regions. It outlines the management of independent datacards for different regions and the usage of the combineCards.py tool to generate a combined workspace for a global fit.
+
+To get the most out of these tutorials, I recommend progressing through the directories in numerical order. 
+
+1. 📂 **Navigate** to the specific directory.
+2. 📖 **Read** the local `README.md` file for the step-by-step instructions and theoretical context for that level.
+3. 🔍 **Inspect** the provided `datacard.txt` and any associated `.root` files to understand their structure.
+4. ⚙️ **Execute** the provided scripts to run the Combine commands locally and analyze the output limits and significance.
+
+## 🛠️Setting up Combine locally
+
+### Get the dependencies first!
+
+Before building Combine itself, you need to install its dependencies. We will install everything into a local directory (e.g., `$HOME/local`) to maintain an isolated, user-level environment.
+
+- **ROOT**
+I highly recommend staying in the exact same environment where ROOT is built to avoid system path and Python-related conflicts. Pick a Conda environment and install ROOT using the following guides:
+	- [Installing Miniconda](https://phazarik.github.io/pages/tools-for-noobs.html#setting-up-miniconda) [this ensures Python path compatibility]
+	- [Building ROOT](https://phazarik.github.io/pages/tools-for-noobs.html#setting-up-root) [Can be installed in the `base` environment]
+	> **⚠️ Important:** Installing Combine requires ROOT's MathMore library. For this, ROOT needs to be built using the `-Dmathmore=ON` option. If you alredy have ROOT, you can check whether this library by doing the following.
+	```bash
+	root-config --features
+	ls $HOME/root_install/lib/libMathMore*
+	```
+	> If you can't find the MathMore library, rebuild ROOT like this.
+	```bash
+	cd $HOME/root_build
+	cmake $HOME/root_src -DCMAKE_INSTALL_PREFIX=$HOME/root_install -Dmathmore=ON
+	make -j8 ## Use all available CPUs for speed
+	make install
+	```
+- **Boost** 
+Combine uses the Boost library for parsing command-line options. Download the latest .tar.gz source from the Boost release page ([https://www.boost.org/releases/latest/](https://www.boost.org/releases/latest/)). Move it to your home area, extract it, and build using the following commands. It takes a couple of minutes.
+	```bash
+	tar -xzvf boost_1_91_0.tar.gz
+	cd boost_1_91_0/
+	bash bootstrap.sh                 # creates a binary named b2
+	./b2 install --prefix=$HOME/local # installs in home area
+	```
+	
+- **Eigen**
+Used for linear algebra operations within `CMSInterferenceFunc` and `RooSplineND`. Download and install from GitLab.
+	```bash
+	git clone https://gitlab.com/libeigen/eigen.git
+	cd eigen/
+	mkdir build && cd build
+	cmake .. -DCMAKE_INSTALL_PREFIX=$HOME/local
+	make -j8     # Use all available CPUs for speed
+	make install # Might take 15-20 minutes
+	```
+	> This is a slow build step (~15-20 minutes). The compiler verbosity is minimal, so it may appear stuck at 0% for a long time before suddenly jumping to 33%. Be patient.
+	
+- **VDT [optional]**
+VDT provides fast, vectorized math functions. Download and install from GitHub.
+	```bash
+	git clone https://github.com/dpiparo/vdt.git
+	cd vdt/
+	mkdir build && cd build
+	cmake .. -DCMAKE_INSTALL_PREFIX=$HOME/local -DCMAKE_POLICY_VERSION_MINIMUM=3.5
+	# hack: VDT requires older cmake version
+	make -j8 # Use all available CPUs for speed
+	make install
+	```
+### Install CMS-combine
+
+⚠️Make sure that ROOT's MathMore library is available [read the ROOT section carefully]. 
+✅Once all dependencies are ready, you can clone Combine directly from GitHub and compile as follows.
+```bash
+git clone https://github.com/cms-analysis/HiggsAnalysis-CombinedLimit.git
+cd HiggsAnalysis-CombinedLimit/
+mkdir build && cd build
+cmake ..             # In case you did not install VDT, use the -DUSE_VDT=FALSE option
+cmake --build . -j8  # Use all available CPUs for speed
+```
+
+---
+I hope this guide makes navigating Combine outside of CMSSW a bit easier. If you encounter any issues, have suggestions for improvements, or just want to discuss CMS data analysis, feel free to reach out!
+
+
+**Prachurjya Hazarika**
+![IISER](https://img.shields.io/badge/IISER-Pune-white?labelColor=d80001)   ![CMS](https://img.shields.io/badge/CMS-CERN-white?labelColor=00319b)

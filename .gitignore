@@ -1,0 +1,8 @@
+*~
+*#
+higgsCombine*.root
+roostats-*
+combine_logger.out
+*.log
+__pycache__/
+*.py[cod]
