@@ -6,7 +6,7 @@ A datacard is a plain text file describing the statistical model that CMS Combin
 
 ## 101: Explaining a datacard
 
-The example datacard, `example_101.txt` contains only the minimal essential information:
+The example datacard, `datacard_101.txt` contains only the minimal essential information:
 
 ```text
 imax 1
@@ -70,7 +70,7 @@ Finally, the `rate` row gives the expected event yields before any statistical i
 The limit is calculated using the _Asymptotic approximation_.
 
 ```bash
-combine -M AsymptoticLimits example_01.txt
+combine -M AsymptoticLimits datacard_01.txt
 ```
 The output should look like this.
 
@@ -150,15 +150,15 @@ Modifying the datacard and rerunning Combine is an effective way to build intuit
 
 By default, Combine prints only the final results. To see more details about the internal calculations, increase the verbosity:
 ```bash
-combine -M AsymptoticLimits example_101.txt -v 1
+combine -M AsymptoticLimits datacard_101.txt -v 1
 ```
 This prints additional information such as the best-fit value of the signal strength, likelihood minimization, CLs calculations, and intermediate values used during the limit determination. Increasing the verbosity further shows detailed RooFit output, minimization steps, and numerical information useful for debugging and understanding what Combine is doing internally. A complete understanding of all outputs is not required at this stage. The following options can also be explored.
 
 #### Running a blinded test
 Before looking at the observed data, it is common practice to compute only the expected limits. This is the standard workflow before unblinding an analysis. There are two commonly used options:
 ```bash
-combine -M AsymptoticLimits example_101.txt --run blind
-combine -M AsymptoticLimits example_101.txt -t -1
+combine -M AsymptoticLimits datacard_101.txt --run blind
+combine -M AsymptoticLimits datacard_101.txt -t -1
 ```
 -   `--run blind` suppresses the observed limit and prints only the expected limits. This is useful for producing blinded results before the data are examined.
 -   `-t -1` tells Combine to replace the observed data with an **Asimov dataset** (background-only expectation). Since an Asimov dataset contains no statistical fluctuations, the "observed" limit is nearly identical to the median expected limit. This option is commonly used for validation studies and debugging.
@@ -166,20 +166,20 @@ combine -M AsymptoticLimits example_101.txt -t -1
 #### Best-fit signal strength (Fit Diagnostics)
 A maximum-likelihood fit can be performed using `FitDiagnostics`. The output reports the best-fit value of the signal strength `r` and its uncertainty. In later examples with systematic uncertainties, this command also produces post-fit shapes, nuisance parameter pulls, constraints, and many other useful diagnostics.
 ```bash
-combine -M FitDiagnostics example_101.txt
+combine -M FitDiagnostics datacard_101.txt
 ```
 #### Likelihood fit
 
 The `MultiDimFit` method performs a likelihood fit to the parameter(s) of interest. For this simple example, it reports only the best-fit value of `r`. In advanced cases, it can perform likelihood scans and confidence interval estimation.
 ```bash
-combine -M MultiDimFit example_101.txt
+combine -M MultiDimFit datacard_101.txt
 ```
 
 ### Creating a RooWorkspace
 
 Internally, CMS Combine does not work directly with the text datacard. The datacard is first converted into a **RooWorkspace**, a ROOT object that stores the complete statistical model in a format understood by RooFit and RooStats. This includes the observables, model parameters, probability density functions (PDFs), datasets, and other objects needed for statistical inference. This conversion is performed using the following command:
 ```bash
-text2workspace.py example_101.txt -o  workspace.root
+text2workspace.py datacard_101.txt -o  workspace.root
 ```
 The resulting `workspace.root` file contains a `RooWorkspace` named `w`. One advantage of creating the workspace explicitly is that the conversion needs to be done only once. All subsequent Combine commands can be run directly on the workspace, which is particularly convenient and time-saving for large analyses. It also allows inspection of the statistical model that Combine has built from the data card.
 
@@ -213,7 +213,7 @@ The output is organized into several sections.
 
 ## 102: Adding more backgrounds
 
-The example can be made more realistic by introducing additional background processes. The datacard `example_102.txt` now contains three background processes contributing to the same search region (`SR1`).
+The example can be made more realistic by introducing additional background processes. The datacard `datacard_102.txt` now contains three background processes contributing to the same search region (`SR1`).
 ```text
 imax 1
 jmax 3
@@ -244,7 +244,7 @@ Notice that the structure of the datacard is otherwise identical. Adding more pr
 
 ## 103: Adding more bins (signal regions)
 
-Previous examples featured all processes contributing to a single search region (`SR1`). In a realistic analysis, data is typically divided into multiple search regions to improve sensitivity. The datacard `example_103.txt` introduces a second search region (`SR2`).
+Previous examples featured all processes contributing to a single search region (`SR1`). In a realistic analysis, data is typically divided into multiple search regions to improve sensitivity. The datacard `datacard_103.txt` introduces a second search region (`SR2`).
 ```text
 imax 2
 jmax 3
