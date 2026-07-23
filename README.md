@@ -1,4 +1,4 @@
-# CMS-combine tutorial
+# CMS-Combine tutorial
 
 <div align="center">
 
@@ -8,7 +8,7 @@
 
 ![ROOT](https://img.shields.io/badge/ROOT-6.36-yellow) ![Python](https://img.shields.io/badge/Python-3.10.18-3776AB?logo=python&logoColor=white) ![Boost](https://img.shields.io/badge/Boost-1.91.0-FF9900?logo=c%2B%2B&logoColor=white) ![Eigen](https://img.shields.io/badge/Eigen-5.0.1-E34326) ![VDT](https://img.shields.io/badge/VDT-0.4.6-7A7A7A)
 
-The CMS-Combine tool is a robust software package based on [RooStats](https://twiki.cern.ch/twiki/bin/view/RooStats/WebHome) and [RooFit](https://root.cern.ch/roofit), utilized extensively for statistical analysis. Originally developed within the Higgs Physics Analysis Group (PAG), its usage has since become widespread across the CMS collaboration. Typically, Combine is executed within the CMSSW framework. 
+The CMS-Combine tool is a robust software package based on [RooStats](https://twiki.cern.ch/twiki/bin/view/RooStats/WebHome) and [RooFit](https://root.cern/manual/roofit/), utilized extensively for statistical analysis. Originally developed within the Higgs Physics Analysis Group (PAG), its usage has since become widespread across the CMS collaboration. Typically, Combine is executed within the CMSSW framework. 
 
 This repository provides a workflow to build and run Combine **locally**. All dependencies in this guide are compiled using `cmake`/`make` and installed directly into your home directory (`$HOME`). This avoids the need for `sudo` access, making the setup fully compatible with high-performance clusters where you may lack root or administrator privileges.
 
