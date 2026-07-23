@@ -97,8 +97,21 @@ VDT provides fast, vectorized math functions. Download and install from GitHub.
 git clone https://github.com/cms-analysis/HiggsAnalysis-CombinedLimit.git
 cd HiggsAnalysis-CombinedLimit/
 mkdir build && cd build
-cmake ..             # In case you did not install VDT, use the -DUSE_VDT=FALSE option
+cmake .. -DCMAKE_INSTALL_PREFIX=$HOME/local -DCMAKE_PREFIX_PATH="$HOME/local;$HOME/root_install"
+# In case you did not install VDT, use the -DUSE_VDT=FALSE option here
+# It may also complain about missing GTest library.
+# It's not necessary; we are not uging the google test library.
 cmake --build . -j8  # Use all available CPUs for speed
+```
+Once the build is complete, the binary is created in the `build/bin` directory. Update the system path variables in the `.bashrc` by including the following lines.
+```bash
+export PATH=$HOME/HiggsAnalysis-CombinedLimit/build/bin:$PATH
+export LD_LIBRARY_PATH=$HOME/HiggsAnalysis-CombinedLimit/build/lib:$LD_LIBRARY_PATH
+export PYTHONPATH=$HOME/HiggsAnalysis-CombinedLimit/build/python:$PYTHONPATH
+```
+All done! Verify the installation by running the following.
+```bash
+combine --help
 ```
 
 ---
