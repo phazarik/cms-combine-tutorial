@@ -1,0 +1,43 @@
+{
+    "SR": {
+        "bin_edges": [0.0, 1.0],
+        "processes": {
+            "data_obs": {
+                "yields": [33.0],
+                "errors": [5.74]
+            },
+            "vll": {
+                "yields": [5.2],
+                "errors": [1.2],
+                "systematics": {
+                    "CMS_eff_e_id": { "Up": [5.3], "Down": [5.1] },
+                    "CMS_scale_j": { "Up": [5.5], "Down": [4.9] }
+                }
+            },
+            "ttbar": {
+                "yields": [18.3],
+                "errors": [4.0],
+                "systematics": {
+                    "CMS_eff_e_id": { "Up": [18.7], "Down": [17.9] },
+                    "CMS_scale_j": { "Up": [19.2], "Down": [17.4] }
+                }
+            },
+            "dy": {
+                "yields": [6.8],
+                "errors": [1.5],
+                "systematics": {
+                    "CMS_eff_e_id": { "Up": [6.9], "Down": [6.7] },
+                    "CMS_scale_j": { "Up": [7.1], "Down": [6.5] }
+                }
+            },
+            "vv": {
+                "yields": [2.1],
+                "errors": [0.5],
+                "systematics": {
+                    "CMS_eff_e_id": { "Up": [2.14], "Down": [2.06] },
+                    "CMS_scale_j": { "Up": [2.2], "Down": [2.0] }
+                }
+            }
+        }
+    }
+}

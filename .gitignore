@@ -9,3 +9,6 @@ __pycache__/
 
 level2_ShapeAnalysis/shapes
 level2_ShapeAnalysis/datacard*txt
+
+level3_SystUnc/shapes
+level3_SystUnc/datacard*txt

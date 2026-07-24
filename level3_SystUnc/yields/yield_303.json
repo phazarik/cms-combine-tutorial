@@ -1,0 +1,43 @@
+{
+    "SR": {
+        "bin_edges": [0.0, 1.0, 2.0],
+        "processes": {
+            "data_obs": {
+                "yields": [33.0, 21.0],
+                "errors": [5.74, 4.58]
+            },
+            "vll": {
+                "yields": [5.2, 3.4],
+                "errors": [1.2, 0.8],
+                "systematics": {
+                    "CMS_eff_e_id": { "Up": [5.3, 3.47], "Down": [5.1, 3.33] },
+                    "CMS_scale_j": { "Up": [5.5, 3.6], "Down": [4.9, 3.2] }
+                }
+            },
+            "ttbar": {
+                "yields": [18.3, 12.1],
+                "errors": [4.0, 3.0],
+                "systematics": {
+                    "CMS_eff_e_id": { "Up": [18.7, 12.3], "Down": [17.9, 11.9] },
+                    "CMS_scale_j": { "Up": [19.2, 12.7], "Down": [17.4, 11.5] }
+                }
+            },
+            "dy": {
+                "yields": [6.8, 4.2],
+                "errors": [1.5, 1.0],
+                "systematics": {
+                    "CMS_eff_e_id": { "Up": [6.9, 4.3], "Down": [6.7, 4.1] },
+                    "CMS_scale_j": { "Up": [7.1, 4.4], "Down": [6.5, 4.0] }
+                }
+            },
+            "vv": {
+                "yields": [2.1, 1.3],
+                "errors": [0.5, 0.4],
+                "systematics": {
+                    "CMS_eff_e_id": { "Up": [2.14, 1.33], "Down": [2.06, 1.27] },
+                    "CMS_scale_j": { "Up": [2.2, 1.4], "Down": [2.0, 1.2] }
+                }
+            }
+        }
+    }
+}

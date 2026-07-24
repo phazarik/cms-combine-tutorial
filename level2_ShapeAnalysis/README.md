@@ -217,4 +217,4 @@ Looking at the text output shows the internal structure of the generated workspa
     
 ---
 
-This introductory shape module covers the core mechanics of linking ROOT histograms to CMS Combine statistical models while maintaining clean, scale-invariant text configurations. The next level introduces the implementation of systematic uncertainties, exploring how both normalization log-normal flags and complex shape-morphing nuisance parameters are incorporated into the fit.
+To summarize, this shape module covered the basics of linking ROOT histograms to CMS Combine models while keeping the text files clean and easy to scale. The next level will introduce systematic uncertainties. It explores how to add both log-normal rate changes and complex shape-morphing nuisance parameters into the fit.

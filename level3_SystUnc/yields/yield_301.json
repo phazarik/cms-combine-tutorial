@@ -1,0 +1,27 @@
+{
+    "SR": {
+        "bin_edges": [0.0, 1.0],
+        "processes": {
+            "data_obs": {
+                "yields": [26.0],
+                "errors": [5.10]
+            },
+            "vll": {
+                "yields": [5.2],
+                "errors": [1.2],
+                "systematics": {
+                    "CMS_eff_e_id": { "Up": [5.3], "Down": [5.1] },
+                    "CMS_scale_j": { "Up": [5.5], "Down": [4.9] }
+                }
+            },
+            "ttbar": {
+                "yields": [23.8],
+                "errors": [4.9],
+                "systematics": {
+                    "CMS_eff_e_id": { "Up": [24.3], "Down": [23.3] },
+                    "CMS_scale_j": { "Up": [25.0], "Down": [22.6] }
+                }
+            }
+        }
+    }
+}
