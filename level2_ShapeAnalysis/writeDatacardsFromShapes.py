@@ -13,8 +13,8 @@
 #   expected process rates mapped to Combine IDs, and autoMCStats directives.
 #
 # Usage: 
-#       python3 convertShapesToDatacards.py
-#       python3 convertShapesToDatacards.py -i shapes/shape_example.root
+#       python3 writeDatacardsFromShapes.py
+#       python3 writeDatacardsFromShapes.py -i shapes/shape_example.root
 # -----------------------------------------------------------------------------
 
 import os, argparse

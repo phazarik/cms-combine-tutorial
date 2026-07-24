@@ -11,7 +11,7 @@ Moving forward, let's be careful with our notation. In this exercise, we will st
 
 Different SRs can have different binning structures for their respective variables.
 
-## Input Configurations
+## Input configurations
 
 To bridge the gap between counting and shape experiments, the Level 1 counting examples (`101`, `102`, and `103`) have been written as JSON configuration files: `yield_201.json`, `yield_202.json`, and `yield_203.json`. These carry the same fundamental information, but they now explicitly carry the statistical error along with the yield (for now, we consider statistical uncertainties only). 
 
@@ -39,11 +39,11 @@ TFile** shapes/shape_203.root
 -   The `_data_obs` suffix is strict and compulsory for the data histogram in Combine.
 -   This specific example packages the identical total yields split across two bins inside each histogram, mimicking the physical information of the `datacard_103.txt` counting experiment.
 
-## Converting shapes to datacards
+## Writing datacards
 
-Once the ROOT histograms are created, the next step is to write the text datacards that reference these shapes. The `convertShapesToDatacards.py` script automates this process. It reads the generated `.root` files in the `shapes/` directory and constructs the Combine datacard syntax, mapping the physics processes to their respective histograms. Individual files can be processed using the `-i` argument; otherwise, it processes all files in the `shapes/` directory.
+Once the ROOT histograms are created, the next step is to write the text datacards that reference these shapes. The `writeDatacardsFromShapes.py` script automates this process. It reads the generated `.root` files in the `shapes/` directory and constructs the Combine datacard syntax, mapping the physics processes to their respective histograms. Individual files can be processed using the `-i` argument; otherwise, it processes all files in the `shapes/` directory.
 ```bash
-python3 convertShapesToDatacards.py -i shapes/shape_203.root
+python3 writeDatacardsFromShapes.py -i shapes/shape_203.root
 ```
 The output datacard looks like this:
 ```text
@@ -71,7 +71,7 @@ rate         8.6      11.0     30.4     3.4
 * autoMCStats 10 1 1
 ```
 
-### Key Differences: Counting vs. Shape Datacards
+### Key Differences: counting vs. shape-datacards
 
 Comparing this new shape-based datacard to the multi-bin counting experiment from the previous module (`datacard_103.txt`), several critical shifts in how Combine interprets the model can be identified:
 
@@ -108,7 +108,7 @@ Shifting from standard counting experiments to a shape analysis provides signifi
 To further clarify the distinction between signal regions and individual histogram bins, the configuration `yield_204.json` combines the physics information from `201`, `202`, and `203` into three separate signal regions: `SR201`, `SR202`, and `SR203`. 
 ```bash
 python3 convertYieldsToShapes.py -i yields/yield_204.json
-python3 convertShapesToDatacards.py -i shapes/shape_204.root
+python3 writeDatacardsFromShapes.py -i shapes/shape_204.root
 ```
 Inspecting the structural layout of the generated ROOT file reveals that all histograms are self-contained within a single file:
 ```text
@@ -155,21 +155,65 @@ rate         5.2      0.0      23.8     0.0      5.2      6.8      18.3     2.1 
 ```
 ### What are the changes?
 
--   **Simultaneous Mapping via `$CHANNEL`:** Even though the datacard structure looks more complex, the single `shapes` rule still holds. The `$CHANNEL` variable dynamically matches `SR201`, `SR202`, and `SR203` as defined in the `bin` rows, mapping each column to its precise histogram inside `shape_204.root`.
+-   **Simultaneous mapping via `$CHANNEL`:** Even though the datacard structure looks more complex, the single `shapes` rule still holds. The `$CHANNEL` variable dynamically matches `SR201`, `SR202`, and `SR203` as defined in the `bin` rows, mapping each column to its precise histogram inside `shape_204.root`.
     
 -   **`imax` represents independent regions:** The `imax` parameter is set to **3** because there are three separate search regions. Crucially, each of these three regions can contain an arbitrary number of internal bins inside their respective ROOT histograms, but they only take up one channel block per region in the text card.
     
--   **Handling Zero-Yield Processes:** In `SR201`, certain processes (`dy` and `vv`) have a rate of `0.0` (because there were absent in the `201` example). In a purely text-based counting card, handling missing processes across different blocks requires careful, asymmetric column structuring. Here, the structure remains perfectly uniform; the script simply enters a rate of `0.0` (and the corresponding ROOT file omits the empty histograms), which Combine processes correctly without crashing.
+-   **Handling zero-yield processes:** In `SR201`, certain processes (`dy` and `vv`) have a rate of `0.0` (because there were absent in the `201` example). In a purely text-based counting card, handling missing processes across different blocks requires careful, asymmetric column structuring. Here, the structure remains perfectly uniform; the script simply enters a rate of `0.0` (and the corresponding ROOT file omits the empty histograms), which Combine processes correctly without crashing.
     
 Attempting to implement this exact multi-region, multi-bin setup using a text-only counting experiment would be exceedingly difficult and error-prone, as it would require expanding the datacard horizontally by every single bin of every single signal region and manually matching every rate and statistical error block.
 
+### Inspecting the RooWorkspace: autoMCStats
+
+To check the RooFit objects made by Combine, turn the shape datacard into a `RooWorkspace` file using `text2workspace.py`. Then open a ROOT session and run the `Print()` method:
+```bash
+text2workspace.py datacard_204.txt -o workspace_204.root
+root workspace_204.root
+```
+```cpp
+root [1] w->Print()
+```
+Looking at the text output shows the internal structure of the generated workspace:
+1. **Created nuisance parameters (`variables`):** Combine creates a nuisance parameter and a global observable for every histogram bin that passes the threshold in the datacard:
+	```text
+	prop_binSR201_bin0, prop_binSR201_bin0_In, 
+	prop_binSR202_bin0, prop_binSR202_bin0_In, 
+	prop_binSR203_bin0, prop_binSR203_bin0_In, prop_binSR203_bin1, prop_binSR203_bin1_In
+	```
+	-  `prop_bin<SR>_bin<N>` is the active parameter used to scale the bin yield up or down during the fit.
+	-  `prop_bin<SR>_bin<N>_In` is the global observable fixed to the nominal value (usually 1.0).
+	-  Bins only receive these parameters if they pass the event threshold and setting criteria defined by the `autoMCStats` options.
+	
+2. **Error functions (`functions`):** Shape uncertainties are added to the templates using the `CMSHistErrorPropagator` class:
+	```	
+	CMSHistErrorPropagator::prop_binSR203[ x=CMS_th1x funcs=(shapeSig_vll_SR203_rebinPdf, ...) coeffs=(...) binpars=(prop_binSR203_bin0,prop_binSR203_bin1) ]
+	```
+	This class connects the original shapes to their bin parameters. During the fit, it shifts the bin yields up or down based on the value of the `prop_bin` parameters.
+
+3. **Gaussian constraints (`p.d.f.s`):** To account for limited MC statistics, Combine creates Gaussian constraint functions:
+	```
+	SimpleGaussianConstraint::prop_binSR201_bin0_Pdf[ x=prop_binSR201_bin0 mean=prop_binSR201_bin0_In sigma=1 ] = 1
+	SimpleGaussianConstraint::prop_binSR202_bin0_Pdf[ x=prop_binSR202_bin0 mean=prop_binSR202_bin0_In sigma=1 ] = 1
+	SimpleGaussianConstraint::prop_binSR203_bin0_Pdf[ x=prop_binSR203_bin0 mean=prop_binSR203_bin0_In sigma=1 ] = 1
+	SimpleGaussianConstraint::prop_binSR203_bin1_Pdf[ x=prop_binSR203_bin1 mean=prop_binSR203_bin1_In sigma=1 ] = 1
+	```
+	These functions add a penalty to the likelihood if the parameters drift too far from the original MC simulation values.
+
+4. **Parameter grouping (`named sets`):** The separate parameters are put together into lists:
+	```
+	group_autoMCStats:(prop_binSR201_bin0,prop_binSR202_bin0,prop_binSR203_bin0,prop_binSR203_bin1)		
+	ModelConfig_NuisParams:(prop_binSR201_bin0,prop_binSR202_bin0,prop_binSR203_bin0,prop_binSR203_bin1)
+	```
+	Mapping these parameters into the `group_autoMCStats` list lets Combine handle auto statistical uncertainties easily. Putting them in one group allows controlling all bin parameters at once (like freezing or profiling them during fits) without needing to manage each bin parameter manually.
+
+
 ## Exercises
 
-1.  **Standard Limits and Diagnostics:** Repeat the Level 1 statistics exercises on these new shape-based datacards (`shape_201.root` through `shape_204.root`). Run `AsymptoticLimits` and `FitDiagnostics` to verify the statistical pipeline works exactly as it did for counting experiments.
+1.  Repeat the Level 1 statistics exercises on these new shape-based datacards. Run `AsymptoticLimits` and `FitDiagnostics` to verify the statistical pipeline works exactly as it did for counting experiments.
     
-2.  **Inspect the Workspace Structure:** Convert a shape datacard into a workspace using `text2workspace.py` and inspect the output using the `w->Print()` method in a ROOT session. Observe how `autoMCStats` dynamically generates a dedicated nuisance parameter for every valid histogram bin under the hood.
+2.  Convert a shape datacard into a workspace using `text2workspace.py` and inspect the output using the `w->Print()` method in a ROOT session. Observe how `autoMCStats` dynamically generates a dedicated nuisance parameter for every valid histogram bin under the hood.
     
-3.  **Quantify the Combination Gain:** Compute the upper limits on the signal strength parameter ($\mu$) for the individual datacards (`201`, `202`, and `203`). Then, execute the limit calculation on the combined datacard (`204`) and compare the results. Note how combining orthogonal signal regions structures a tighter statistical constraint, improving the overall sensitivity.
+3.  Compute the upper limits on the signal strength parameter ($\mu$) for the individual datacards (`201`, `202`, and `203`). Then, execute the limit calculation on the combined datacard (`204`) and compare the results. Note how combining orthogonal signal regions structures a tighter statistical constraint, improving the overall sensitivity.
     
 ---
 
