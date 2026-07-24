@@ -1,5 +1,4 @@
 # Systematic Uncertainties
-# Systematic Uncertainties
 
 The first section described simple counting experiments using only text datacards. The second section transitioned those same examples to use shape files, with the datacards pointing directly to the underlying ROOT histograms. In this module, we take the final step for this baseline setup: incorporating systematic uncertainties into those shape files and datacards.
 
