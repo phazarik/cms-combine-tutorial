@@ -6,3 +6,6 @@ combine_logger.out
 *.log
 __pycache__/
 *.py[cod]
+
+level2_ShapeAnalysis/shapes
+level2_ShapeAnalysis/datacard*txt

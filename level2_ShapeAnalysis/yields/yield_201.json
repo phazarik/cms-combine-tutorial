@@ -1,0 +1,19 @@
+{
+    "SR": {
+	"bin_edges": [0.0, 1.0],
+	"processes": {
+            "data_obs": {
+		"yields": [26.0],
+		"errors": [5.10]
+            },
+            "vll": {
+		"yields": [5.2],
+		"errors": [1.2]
+            },
+            "ttbar": {
+		"yields": [23.8],
+		"errors": [4.9]
+            }
+	}
+    }
+}

@@ -8,7 +8,7 @@
 
 ![ROOT](https://img.shields.io/badge/ROOT-6.36-yellow) ![Python](https://img.shields.io/badge/Python-3.10.18-3776AB?logo=python&logoColor=white) ![Boost](https://img.shields.io/badge/Boost-1.91.0-FF9900?logo=c%2B%2B&logoColor=white) ![Eigen](https://img.shields.io/badge/Eigen-5.0.1-E34326) ![VDT](https://img.shields.io/badge/VDT-0.4.6-7A7A7A)
 
-The CMS-Combine tool is a robust software package based on [RooStats](https://twiki.cern.ch/twiki/bin/view/RooStats/WebHome) and [RooFit](https://root.cern/manual/roofit/), utilized extensively for statistical analysis. Originally developed within the Higgs Physics Analysis Group (PAG), its usage has since become widespread across the CMS collaboration. Typically, Combine is executed within the CMSSW framework. 
+The CMS-Combine tool is a software package based on [RooStats](https://twiki.cern.ch/twiki/bin/view/RooStats/WebHome) and [RooFit](https://root.cern/manual/roofit/), utilized extensively for statistical analysis. Originally developed within the Higgs Physics Analysis Group (PAG), its usage has since become widespread across the CMS collaboration. Typically, Combine is executed within the CMSSW framework. 
 
 This repository provides a workflow to build and run Combine **locally**. All dependencies in this guide are compiled using `cmake`/`make` and installed directly into your home directory (`$HOME`). This avoids the need for `sudo` access, making the setup fully compatible with high-performance clusters where you may lack root or administrator privileges.
 
@@ -19,6 +19,8 @@ This repository provides a workflow to build and run Combine **locally**. All de
 This repository is structured into progressively complex levels, mimicking the actual workflow of developing a CMS analysis. The tutorials progress from basic counting experiments to multi-region shape-based analyses with nuisance parameters. Each level is contained within its own directory. Each directory contains a dedicated README file detailing the concepts, along with the necessary datacards, ROOT files, and executable run scripts.
 
 - **[level1_GettingStarted](./level1_GettingStarted):** Introduces the basic structure of a CMS Combine datacard. Starting from a simple counting experiment, it gradually adds multiple backgrounds, multiple signal regions, and automatic MC statistical uncertainties, while demonstrating the most commonly used Combine commands.
+
+-   **[level2_ShapeAnalysis](https://www.google.com/search?q=./level2_ShapeAnalysis&authuser=1):** Introduces shape-based analyses by mapping kinematic distributions into ROOT histograms. It demonstrates how outsourcing binning details to ROOT files keeps text datacards clean and scale-invariant, explores the distinction between signal regions and individual bins.
 
 ![More to be added](https://img.shields.io/badge/More%20to%20be%20added-yellow?style=for-the-badge)
 

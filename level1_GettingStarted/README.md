@@ -162,7 +162,7 @@ combine -M AsymptoticLimits datacard_101.txt -t -1
 ```
 -   `--run blind` suppresses the observed limit and prints only the expected limits. This is useful for producing blinded results before the data are examined.
 -   `-t -1` tells Combine to replace the observed data with an **Asimov dataset** (background-only expectation). Since an Asimov dataset contains no statistical fluctuations, the "observed" limit is nearly identical to the median expected limit. This option is commonly used for validation studies and debugging.
-- 
+-
 #### Best-fit signal strength (Fit Diagnostics)
 A maximum-likelihood fit can be performed using `FitDiagnostics`. The output reports the best-fit value of the signal strength `r` and its uncertainty. In later examples with systematic uncertainties, this command also produces post-fit shapes, nuisance parameter pulls, constraints, and many other useful diagnostics.
 ```bash
@@ -233,11 +233,11 @@ process      0        1        2        3
 # RATES ---------------------------------------
 rate         5.2      18.3     6.8      2.1
 ```
-Compared to the previous example, only a few things have changed: 
-- `jmax` is now **3**, since there are three background processes (`ttbar`, `dy`, and `vv`). 
+Compared to the previous example, only a few things have changed:
+- `jmax` is now **3**, since there are three background processes (`ttbar`, `dy`, and `vv`).
 -  The **process** and **rate** sections now contain one additional column for each new background.
 - The **bin** row is repeated four times, once for each process, since all processes contribute to the same search region.
-- The process IDs have been updated accordingly: - `0` for the signal (`vll`), - positive integers (`1`, `2`, `3`) for the three background processes. 
+- The process IDs have been updated accordingly: - `0` for the signal (`vll`), - positive integers (`1`, `2`, `3`) for the three background processes.
 - The observation has been changed to **33** events to reflect the new total expected yield.
 
 Notice that the structure of the datacard is otherwise identical. Adding more processes simply means adding more columns while keeping the ordering consistent across the `bin`, `process`, and `rate` rows. All Combine commands introduced in the previous example work without any modification.
@@ -271,6 +271,7 @@ Compared to the previous example, the following changes have been made:
 - The **observation** section now contains one observed event count for each search region.
 - The **bin**, **process**, and **rate** sections now contain one set of processes for **each** search region. In other words, every process must be listed once per analysis bin.
 - The process IDs remain unchanged. The signal is always assigned `0`, while the background processes keep their positive IDs. The same IDs are reused for every search region.
+- kmax is set to **\***, which allows Combine to automatically calculate the nuisance parameters in the datacard. This will be important later when we deal with systematic uncertainties.
 - `autoMCStats` has been enabled with the options `10 1 1`
 
 ### Automatic treatment of MC statistical uncertainties
