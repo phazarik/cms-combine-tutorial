@@ -1,11 +1,5 @@
 # CMS Combine tutorial
 
-<div align="center">
-
-![WIP](https://img.shields.io/badge/Warning-Work_in_Progress-FF3000?style=for-the-badge&logo=git&logoColor=white&labelColor=333333)
-
-</div>
-
 ![ROOT](https://img.shields.io/badge/ROOT-6.36-yellow) ![Python](https://img.shields.io/badge/Python-3.10.18-3776AB?logo=python&logoColor=white) ![Boost](https://img.shields.io/badge/Boost-1.91.0-FF9900?logo=c%2B%2B&logoColor=white) ![Eigen](https://img.shields.io/badge/Eigen-5.0.1-E34326) ![VDT](https://img.shields.io/badge/VDT-0.4.6-7A7A7A)
 
 The CMS Combine tool is a software package based on [RooStats](https://twiki.cern.ch/twiki/bin/view/RooStats/WebHome) and [RooFit](https://root.cern/manual/roofit/), utilized extensively for statistical analysis. Originally developed within the Higgs Physics Analysis Group (PAG), its usage has since become widespread across the CMS collaboration. Typically, Combine is executed within the CMSSW framework. 
@@ -20,9 +14,9 @@ This repository is structured into progressively complex levels, mimicking the a
 
 - **[level1_GettingStarted](./level1_GettingStarted):** Introduces the basic structure of a CMS Combine datacard. Starting from a simple counting experiment, it gradually adds multiple backgrounds, multiple signal regions, and automatic MC statistical uncertainties, while demonstrating the most commonly used Combine commands.
 
--   **[level2_ShapeAnalysis](https://www.google.com/search?q=./level2_ShapeAnalysis&authuser=1):** Introduces shape-based analyses by mapping kinematic distributions into ROOT histograms. It demonstrates how outsourcing binning details to ROOT files keeps text datacards clean and scale-invariant, explores the distinction between signal regions and individual bins.
+-   **[level2_ShapeAnalysis](./level2_ShapeAnalysis):** Introduces shape-based analyses by mapping kinematic distributions into ROOT histograms. It demonstrates how outsourcing binning details to ROOT files keeps text datacards clean and scale-invariant, explores the distinction between signal regions and individual bins.
 
-![More to be added](https://img.shields.io/badge/More%20to%20be%20added-yellow?style=for-the-badge)
+-   **[level3_SystUnc](./level3_SystUnc):** Introduces systematic uncertainties in CMS Combine, covering both shape-based uncertainties using `Up`/`Down` ROOT templates and log-normal normalization uncertainties. It explains how nuisance parameters are defined and applied across processes and signal regions, discusses common pitfalls such as MC statistical fluctuations, negative bins, and asymmetric variations, and demonstrates how systematic uncertainties affect statistical fits and exclusion limits.
 
 To get the most out of these tutorials, I recommend progressing through the directories in numerical order. 
 
@@ -72,9 +66,9 @@ Used for linear algebra operations within `CMSInterferenceFunc` and `RooSplineND
 	mkdir build && cd build
 	cmake .. -DCMAKE_INSTALL_PREFIX=$HOME/local
 	make -j8     # Use all available CPUs for speed
-	make install # Might take 15-20 minutes
+	make install 
 	```
-	> This is a slow build step (~15-20 minutes). The compiler verbosity is minimal, so it may appear stuck at 0% for a long time before suddenly jumping to 33%. Be patient.
+	> This is a slow build step. The compiler verbosity is minimal, so it may appear stuck at 0% for a long time before suddenly jumping to 33%. Be patient.
 	
 - **VDT [optional]**  <br>
 VDT provides fast, vectorized math functions. Download and install from GitHub.
@@ -95,15 +89,15 @@ VDT provides fast, vectorized math functions. Download and install from GitHub.
 git clone https://github.com/cms-analysis/HiggsAnalysis-CombinedLimit.git
 cd HiggsAnalysis-CombinedLimit/
 mkdir build && cd build
-cmake .. -DCMAKE_INSTALL_PREFIX=$HOME/local -DCMAKE_PREFIX_PATH="$HOME/local;$HOME/root_install"
-# In case you did not install VDT, use the -DUSE_VDT=FALSE option here
+cmake .. -DCMAKE_INSTALL_PREFIX=$HOME/local -DCMAKE_PREFIX_PATH="$HOME/local;$HOME/root_install" -DUSE_VDT=OFF
+# In case you did not install VDT, use the -DUSE_VDT=OFF option here
 # It may also complain about missing GTest library.
 # It's not necessary; we are not uging the google test library.
 cmake --build . -j8  # Use all available CPUs for speed
 ```
 Once the build is complete, the binary is created in the `build/bin` directory. Update the system path variables in the `.bashrc` by including the following lines.
 ```bash
-export PATH=$HOME/HiggsAnalysis-CombinedLimit/build/bin:$PATH
+export PATH=$HOME/HiggsAnalysis-CombinedLimit/build/bin:$HOME/HiggsAnalysis-CombinedLimit/scripts:$PATH
 export LD_LIBRARY_PATH=$HOME/HiggsAnalysis-CombinedLimit/build/lib:$LD_LIBRARY_PATH
 export PYTHONPATH=$HOME/HiggsAnalysis-CombinedLimit/build/python:$PYTHONPATH
 ```
@@ -111,6 +105,26 @@ Done!<br>
 Verify the installation by running the following.
 ```bash
 combine --help
+```
+>**Note:** In case the conda environment complains about an OpenSSL/SSL error, add the following lines to the `.bashrc` to force conda's OpenSSL specifically for all Combine Python scripts:
+>```bash
+>if [ -n "$CONDA_PREFIX" ] && [ -d "$HOME/HiggsAnalysis-CombinedLimit/scripts" ]; then
+>    for script in $HOME/HiggsAnalysis-CombinedLimit/scripts/*.py; do
+>        script_name=$(basename "$script")
+>        alias "$script_name"="LD_PRELOAD=\$CONDA_PREFIX/lib/libcrypto.so:\$CONDA_PREFIX/lib/libssl.so $script_name"
+>    done
+>fi
+>```
+
+### Plotting utilities
+For demonstrating the examples, I am using the `cmsstyle` package, which can be installed as follows.
+```bash
+pip install cmsstyle
+```
+Call the plotmaker function to visualize the events kept in the JSON files.
+```bash
+python3 makePlot.py --infile level2_ShapeAnalysis/yields/yield_203.json
+python3 makePlot.py --infile level2_ShapeAnalysis/yields/yield_203.json --save --ratio
 ```
 
 ---

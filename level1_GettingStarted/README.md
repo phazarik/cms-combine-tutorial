@@ -70,8 +70,13 @@ Finally, the `rate` row gives the expected event yields before any statistical i
 The limit is calculated using the _Asymptotic approximation_.
 
 ```bash
-combine -M AsymptoticLimits datacard_01.txt
+combine -M AsymptoticLimits datacard_101.txt
 ```
+> Note: if this causes segmentation fault, try the two step process:
+> ```bash
+> text2workspace.py datacard_101.txt -o workspace.root
+> combine -M AsymptoticLimits workspace.root
+> ```
 The output should look like this.
 
 ```text

@@ -1,14 +1,28 @@
+# --- Editor & OS ---
 *~
 *#
+.DS_Store
+
+# --- Python ---
+__pycache__/
+*.py[cod]
+
+# --- Combine Debris & Logs ---
 higgsCombine*.root
 roostats-*
 combine_logger.out
 *.log
-__pycache__/
-*.py[cod]
 
-level2_ShapeAnalysis/shapes
-level2_ShapeAnalysis/datacard*txt
+# --- Outputs & Binaries ---
+*.pdf
+*.png
+*.json
+workspace*.root
 
-level3_SystUnc/shapes
-level3_SystUnc/datacard*txt
+# --- Level Specific Ignores ---
+level2_ShapeAnalysis/shapes/
+level2_ShapeAnalysis/datacard*.txt
+
+level3_SystUnc/shapes/
+level3_SystUnc/datacard*.txt
+

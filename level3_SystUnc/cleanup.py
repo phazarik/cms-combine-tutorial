@@ -17,7 +17,6 @@ stray_patterns = [
 for pattern in stray_patterns:
     target_path = os.path.join(script_dir, pattern)
     matched_paths = glob.glob(target_path)
-    
     for path in matched_paths:
         if os.path.exists(path):
             print(f">> Removing: {path}")
