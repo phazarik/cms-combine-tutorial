@@ -23,6 +23,10 @@ To perform a shape analysis, Combine requires the input distributions to be stor
 ```bash
 python3 convertYieldsToShapes.py -i yields/yield_203.json
 ```
+> Note: This requires the `natsort` package. Install it with `pip` as follows.
+> ```bash
+> pip install natsort
+> ```
 The output file has the following internal layout:
 ```text
 TFile** shapes/shape_203.root
