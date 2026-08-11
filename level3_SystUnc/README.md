@@ -90,5 +90,57 @@ Adding systematics to a datacard is mechanically simple, but requires careful ph
 2. Convert the new datacard to a workspace using `text2workspace.py` and print the entries using `w->Print()` in a ROOT session. Notice how the new nuisance parameters are represented internally compared to the `autoMCStats` parameters.
     
 3. Go crazy! Manually edit the datacard to change the systematic variations to absurd values. Observe where Combine breaks or how the fit behaves.
+
+## Advanced use cases
+
+The following sections detail more advanced operations available in Combine. It is recommended to create a workspace first (using `text2workspace.py`) to test these features. For comprehensive documentation, refer to the [official combine documentation](https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/latest/part3/nonstandard/).
+
+### Pulls and impacts
+
+Impact plots are essential for understanding which systematic uncertainties most strongly affect the parameter of interest (POI), typically the signal strength $r$. This workflow performs an initial fit, scans each nuisance parameter individually to compute its "pull" (how much the data shifts the parameter from its pre-fit expectation), and measures its "impact" on the final limit.
+```bash
+combineTool.py -M Impacts -d workspace.root -m 800 --doInitialFit --robustFit 1
+combineTool.py -M Impacts -d workspace.root -m 800 --robustFit 1 --doFits --parallel 16
+combineTool.py -M Impacts -d workspace.root -m 800 -o impacts.json
+plotImpacts.py -i impacts.json -o impacts_plot
+```
+
+### Goodness of fit 
+
+A goodness of fit (GOF) test evaluates how well the expected model describes the observed data. The saturated model algorithm is commonly used for shape-based analyses. It calculates a test statistic for the observation and compares it against a distribution built from generated pseudo-experiments (toys).
+
+Notice the addition of `--setParameters r=0 --freezeParameters r` to enforce the background-only state:
+```bash
+combine -M GoodnessOfFit workspace.root -m 800 --algo saturated --setParameters r=0 --freezeParameters r -n _data_bkgonly
+combineTool.py -M GoodnessOfFit workspace.root -m 800 --algo saturated --setParameters r=0 --freezeParameters r -n _toys_bkgonly -t 200 --toysFrequentist --parallel 8
+combineTool.py -M CollectGoodnessOfFit --input higgsCombine_data_bkgonly.GoodnessOfFit.mH800.root higgsCombine_toys_bkgonly.GoodnessOfFit.mH800.*.root -m 800 -o gof_bkgonly.json
+plotGof.py gof_bkgonly.json --statistic saturated --mass 800.0 --output gof_plot_bkgonly
+```
+> **Note on the mass parameter (`-m`):** The value `800` used in these commands is simply a dummy mass-name acting as a bookkeeping label. If omitted, Combine defaults to a built-in standard mass (often `120.0` or `160.0`, inherited from historical Higgs searches). When passing the custom mass to plotting scripts, explicitly adding `.0` (e.g., `800.0`) is required to match Combine's internal JSON key formatting.
+
+### Fit diagnostics
+The `FitDiagnostics` method performs a maximum likelihood fit and saves the detailed post-fit distributions, covariance matrices, and shapes. By default, it runs both a background-only fit (`fit_b`) and a signal+background fit (`fit_s`). Freezing the signal strength forces the model to strictly represent the background-only hypothesis, ensuring the saved shapes and pulls are completely devoid of signal contamination.
+
+For standalone environments without a full CMSSW release, the necessary helper script for extracting nuisances must be downloaded directly before running the commands.
+```bash
+curl -O https://raw.githubusercontent.com/cms-analysis/HiggsAnalysis-CombinedLimit/main/test/diffNuisances.py
+```
+As with GOF, the dummy mass label `800` is carried through the commands:
+```bash
+combine -M FitDiagnostics workspace.root -m 800 --setParameters r=0 --freezeParameters r --saveShapes --saveWithUncertainties -n _bkgonly
+python3 diffNuisances.py fitDiagnostics_bkgonly.root --all -g pulls_output_bkgonly.root
+```
+## Hyper-parameters
+
+While Combine attempts to find optimal settings automatically, complex models frequently require manual tuning of the underlying MINUIT minimizer. Supplying explicit hyper-parameters ensures fits converge reliably without stalling or producing unphysical results.
+
+-   **Signal Strength Boundaries (`--rMin` and `--rMax`):** By default, Combine allows the signal strength $r$ to float freely. Restricting this range prevents the minimizer from scanning extreme, unphysical negative cross-sections or wandering infinitely in background-only scenarios. A common baseline is `--rMin -10 --rMax 10`.
+    
+-   **Minimizer Strategy (`--cminDefaultMinimizerStrategy`):** This dictates the thoroughness of the MINUIT Hessian matrix calculation. A value of `0` prioritizes speed and is sufficient for basic limits. A value of `1` (or `2`) is more robust and is strongly recommended for `FitDiagnostics` to guarantee a healthy, accurate covariance matrix.
+    
+-   **Robust Hesse Calculation (`--robustHesse 1`):** Activating this flag forces a more rigorous evaluation of the second derivatives when calculating uncertainties. It significantly reduces the likelihood of the fit failing due to a non-positive-definite matrix.
+    
+-   **Fallback Algorithms (`--cminFallbackAlgo`):** If the primary minimizer (Migrad) fails to converge, providing backup routines allows Combine to recover gracefully. Passing a chain of fallbacks, such as `--cminFallbackAlgo Minuit2,Simplex,0:0.1`, instructs the tool to attempt the Simplex algorithm before entirely abandoning the fit.
+
 ---
 To summarize, this module covered the core mechanics of linking log-normal normalization effects and complex shape-morphing nuisance parameters to the statistical models. Dynamically filtering empty bins and mapping specific uncertainties to the correct backgrounds ensures that the datacard remains physically robust and computationally stable.

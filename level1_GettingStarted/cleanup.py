@@ -6,6 +6,7 @@ script_dir = os.path.dirname(os.path.abspath(__file__))
 stray_patterns = [
     "combine_logger.out",
     "workspace*.root",
+    "datacard*.root",
     "higgsCombine*.root",
     "roostats*",
     "*~",
