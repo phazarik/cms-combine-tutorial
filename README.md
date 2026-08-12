@@ -116,7 +116,7 @@ combine --help
 >fi
 >```
 
-### Plotting utilities
+## Plotting utilities
 For demonstrating the examples, I am using the `cmsstyle` package, which can be installed as follows.
 ```bash
 pip install cmsstyle
@@ -126,6 +126,16 @@ Call the plotmaker function to visualize the events kept in the JSON files.
 python3 makePlot.py --infile level2_ShapeAnalysis/yields/yield_203.json
 python3 makePlot.py --infile level2_ShapeAnalysis/yields/yield_203.json --save --ratio
 ```
+I have also included a Python script to make illustrations for understanding the CLs limits. The script produces a test-statistic distribution and a CLs scan as a function of the signal strength.
+```bash
+python3 makeCLsPlots.py
+```
+This produces:
+
+-   `test_statistic.png` showing the signal+background and background-only test-statistic distributions, the observed test statistic, the corresponding p-values, and CLs.
+-   `cls_limits.png` showing the CLs scan and the corresponding upper limits at different confidence levels.
+
+The main parameters can be modified directly in `makeCLsPlots.py`, including the test-statistic distributions, observed test statistic, CLs thresholds, and signal-strength scan range.
 
 ---
 I hope this guide makes navigating Combine outside of CMSSW a bit easier. If you encounter any issues, have suggestions for improvements, or just want to discuss CMS data analysis, feel free to reach out!
