@@ -95,26 +95,20 @@ cmake .. -DCMAKE_INSTALL_PREFIX=$HOME/local -DCMAKE_PREFIX_PATH="$HOME/local;$HO
 # It's not necessary; we are not uging the google test library.
 cmake --build . -j8  # Use all available CPUs for speed
 ```
-Once the build is complete, the binary is created in the `build/bin` directory. Update the system path variables in the `.bashrc` by including the following lines.
+Once the build is complete, the binary is created in the `build/bin` directory. Return to this tutorial repository and source the included setup script. This keeps the Combine paths out of your `.bashrc` and loads them only when needed.
 ```bash
-export PATH=$HOME/HiggsAnalysis-CombinedLimit/build/bin:$HOME/HiggsAnalysis-CombinedLimit/scripts:$PATH
-export LD_LIBRARY_PATH=$HOME/HiggsAnalysis-CombinedLimit/build/lib:$LD_LIBRARY_PATH
-export PYTHONPATH=$HOME/HiggsAnalysis-CombinedLimit/build/python:$PYTHONPATH
+cd /path/to/cms-combine-tutorial
+source setup.sh
 ```
+The script expects Combine at `$HOME/HiggsAnalysis-CombinedLimit`. If it is installed somewhere else, update `combine_home` near the top of `setup.sh`.
+
 Done!<br>
 Verify the installation by running the following.
 ```bash
 combine --help
+text2workspace.py --help
 ```
->**Note:** In case the conda environment complains about an OpenSSL/SSL error, add the following lines to the `.bashrc` to force conda's OpenSSL specifically for all Combine Python scripts:
->```bash
->if [ -n "$CONDA_PREFIX" ] && [ -d "$HOME/HiggsAnalysis-CombinedLimit/scripts" ]; then
->    for script in $HOME/HiggsAnalysis-CombinedLimit/scripts/*.py; do
->        script_name=$(basename "$script")
->        alias "$script_name"="LD_PRELOAD=\$CONDA_PREFIX/lib/libcrypto.so:\$CONDA_PREFIX/lib/libssl.so $script_name"
->    done
->fi
->```
+>**Note:** In some Conda environments, `text2workspace.py` or `combine` with a text datacard may crash because ROOT finds incompatible OpenSSL libraries. The included `setup.sh` avoids this by using Conda's OpenSSL only for these two commands. The fix is kept local to Combine and does not change `ssh`, `git`, or other system tools.
 
 ## Plotting utilities
 For demonstrating the examples, I am using the `cmsstyle` package, which can be installed as follows.
